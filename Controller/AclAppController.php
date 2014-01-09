@@ -99,10 +99,10 @@ class AclAppController extends AppController {
                 if ($hasUpdates) {
                     $this->render('/Acos/admin_has_updates');
                     $this->response->send();
-                    $this->AclManager->updateControllersHashFile();
+                    $this->AclManager->updateControllerHashFile();
                     exit();
                 } else {
-                    $this->AclManager->updateControllersHashFile();
+                    $this->AclManager->updateControllerHashFile();
                 }
             }
         }
