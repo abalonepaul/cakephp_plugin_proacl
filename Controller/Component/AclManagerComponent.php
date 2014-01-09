@@ -442,7 +442,7 @@ class AclManagerComponent extends Component {
         $currentControllerHash = $this->getCurrentControllerHash();
 
         $File = new File($this->controllerHashFile);
-        return $File->write(serialize($currentControllerHashes));
+        return $File->write(serialize($currentControllerHash));
 
     }
 
