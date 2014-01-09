@@ -166,7 +166,7 @@ class AclAppController extends AppController {
      *
      * @return unknown string
      */
-    protected function getRolePrimaryKeyName() {
+    public function getRolePrimaryKeyName() {
 
         $forcedPkName = Configure::read('acl.aro.role.primary_key');
         if (! empty($forcedPkName)) {
