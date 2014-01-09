@@ -119,7 +119,7 @@ function init_register_role_controller_toggle_right(app_root_url, role_id, plugi
                     //alert(data);
                     permissions = jQuery.parseJSON(data);
                     //alert(permissions);
-
+                    console.log(permissions);
                     for(var action in permissions)
                     {
                         var start_granted = false;

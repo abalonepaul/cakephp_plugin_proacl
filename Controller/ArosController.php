@@ -688,6 +688,7 @@ class ArosController extends AclAppController {
             Configure::write('debug', 0); // -> to disable printing of
                                           // generation time preventing correct
                                           // JSON parsing
+
             echo json_encode($roleControllerPermissions);
             $this->autoRender = false;
         } else {
