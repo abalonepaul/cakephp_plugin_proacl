@@ -26,7 +26,7 @@ class AclAppController extends AppController {
         parent::beforeFilter();
 
         $this->checkConfig();
-        $this->check_files_updates();
+        $this->checkFileUpdates();
     }
 
     /**
@@ -99,10 +99,10 @@ class AclAppController extends AppController {
                 if ($hasUpdates) {
                     $this->render('/Acos/admin_has_updates');
                     $this->response->send();
-                    $this->AclManager->updateControllersHashFile();
+                    $this->AclManager->updateControllerHashFile();
                     exit();
                 } else {
-                    $this->AclManager->updateControllersHashFile();
+                    $this->AclManager->updateControllerHashFile();
                 }
             }
         }
@@ -166,7 +166,7 @@ class AclAppController extends AppController {
      *
      * @return unknown string
      */
-    protected function getRolePrimaryKeyName() {
+    public function getRolePrimaryKeyName() {
 
         $forcedPkName = Configure::read('acl.aro.role.primary_key');
         if (! empty($forcedPkName)) {

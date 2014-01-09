@@ -189,7 +189,7 @@ class AclManagerComponent extends Component {
         $actionsAcoPaths = array();
         foreach ($actions as $action) {
             $actionPath = explode('/', $action);
-            $controller = $action_infos[count($action_infos) - 2];
+            $controller = $actionPath[count($actionPath) - 2];
 
             if ($controller != 'App') {
                 $actionsAcoPaths[] = 'controllers/' . $action;
@@ -309,12 +309,12 @@ class AclManagerComponent extends Component {
                     $controllerName);
 
                 foreach ($actions as $action) {
-                    $actionNode = $aco->node(
+                    $actionNode = $this->Aco->node(
                         'controllers/' . (! empty($pluginName) ? $pluginName . '/' : '') . $controllerName . '/' . $action);
 
                     if (empty($actionNode)) {
                         /* action node does not exist -> create it */
-                        $methodNode = $this->addActionNode($controllerNodId, $action);
+                        $methodNode = $this->addActionNode($controllerNode, $action);
 
                         if (!empty($methodNode)) {
                             $log[] = sprintf(__d('acl', 'Created Aco node for %s'),
@@ -417,11 +417,11 @@ class AclManagerComponent extends Component {
     /**
      * Add an Action Node
      *
-     * @param unknown $controllerNodId
+     * @param unknown $controllerNodeId
      * @param unknown $action
      * @return unknown
      */
-    private function addActionNode($controllerNodId,$action) {
+    private function addActionNode($controllerNode,$action) {
                         $this->Aco->create(
                             array(
                                 'parent_id' => $controllerNode['Aco']['id'],
@@ -430,7 +430,7 @@ class AclManagerComponent extends Component {
                             ));
                         $methodNode = $this->Aco->save();
 
-        return $pluginNode;
+        return $methodNode;
 
     }
 
@@ -442,7 +442,7 @@ class AclManagerComponent extends Component {
         $currentControllerHash = $this->getCurrentControllerHash();
 
         $File = new File($this->controllerHashFile);
-        return $File->write(serialize($currentControllerHashes));
+        return $File->write(serialize($currentControllerHash));
 
     }
 
@@ -496,7 +496,7 @@ class AclManagerComponent extends Component {
             ));
 
         $existingAcoPaths = array();
-        foreach ($acos as $aco_node) {
+        foreach ($acos as $acoNode) {
             $pathNodes = $this->Aco->getPath($acoNode['Aco']['id']);
 
             if (count($pathNodes) > 1 && $pathNodes[0]['Aco']['alias'] == 'controllers') {
@@ -552,7 +552,7 @@ class AclManagerComponent extends Component {
      * @param string $permission_type 'deny' or 'allow', 'grant', depending on
      * what permission (grant or deny) is being set
      */
-    public function savePermissions($aroNodes, $acoPath, $permission_type) {
+    public function savePermissions($aroNodes, $acoPath, $permissionType) {
 
         if (isset($aroNodes[0])) {
             $acoPath = 'controllers/' . $acoPath;
