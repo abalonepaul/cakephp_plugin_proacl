@@ -309,7 +309,7 @@ class AclManagerComponent extends Component {
                     $controllerName);
 
                 foreach ($actions as $action) {
-                    $actionNode = $aco->node(
+                    $actionNode = $this->Aco->node(
                         'controllers/' . (! empty($pluginName) ? $pluginName . '/' : '') . $controllerName . '/' . $action);
 
                     if (empty($actionNode)) {
