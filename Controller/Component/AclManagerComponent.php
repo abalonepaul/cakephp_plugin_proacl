@@ -189,7 +189,7 @@ class AclManagerComponent extends Component {
         $actionsAcoPaths = array();
         foreach ($actions as $action) {
             $actionPath = explode('/', $action);
-            $controller = $action_infos[count($action_infos) - 2];
+            $controller = $actionPath[count($actionPath) - 2];
 
             if ($controller != 'App') {
                 $actionsAcoPaths[] = 'controllers/' . $action;
