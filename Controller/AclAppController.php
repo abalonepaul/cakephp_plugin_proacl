@@ -151,9 +151,9 @@ class AclAppController extends AppController {
     }
 
     /**
-     * Get the Passeed Aco Path
+     * Set the Aco Variables
      */
-    protected function getPassedAcoPath() {
+    protected function setAcoVariables() {
 
         $this->set('plugin',
             isset($this->params['named']['plugin']) ? $this->params['named']['plugin'] : '');
