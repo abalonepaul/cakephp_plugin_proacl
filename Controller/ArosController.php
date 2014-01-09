@@ -710,8 +710,7 @@ class ArosController extends AclAppController {
         /* Check if the role exists in the ARO table */
         $aroNode = $this->Acl->Aro->node($role);
         if (! empty($aroNode)) {
-            if (! $this->AclManager->savePermissions($aroNodes, $acoPath, $permissionType)($aroNode, $acoPath,
-                'grant')) {
+            if (! $this->AclManager->savePermissions($aroNode, $acoPath,'grant')) {
                 $this->set('aclError', true);
             }
         } else {
@@ -720,7 +719,7 @@ class ArosController extends AclAppController {
         }
 
         $this->set('roleId', $roleId);
-        $this->getPassedAcoPath();
+        $this->setAcoVariables();
 
         if ($this->request->is('ajax')) {
             $this->render('ajax_role_granted');
@@ -752,7 +751,7 @@ class ArosController extends AclAppController {
         }
 
         $this->set('roleId', $roleId);
-        $this->getPassedAcoPath();
+        $this->setAcoVariables();
 
         if ($this->request->is('ajax')) {
             $this->render('ajax_role_denied');
@@ -783,7 +782,7 @@ class ArosController extends AclAppController {
             foreach ($controllerActions as $actionName) {
                 $acoPath = $pluginName;
                 if (empty($acoPath)) {
-                    $acoPath .= $controllerName
+                    $acoPath .= $controllerName;
                 } else {
                     $acoPath .= '/' . $controllerName;
                 }
