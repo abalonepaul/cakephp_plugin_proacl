@@ -26,7 +26,7 @@ class AclAppController extends AppController {
         parent::beforeFilter();
 
         $this->checkConfig();
-        $this->check_files_updates();
+        $this->checkFileUpdates();
     }
 
     /**
