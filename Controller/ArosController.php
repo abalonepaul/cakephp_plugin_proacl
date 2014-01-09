@@ -649,7 +649,7 @@ class ArosController extends AclAppController {
 
         $Role = & $this->{Configure::read('acl.aro.role.model')};
 
-        $roleData = $role->read(null, $roleId);
+        $roleData = $Role->read(null, $roleId);
 
         $aroNode = $this->Acl->Aro->node($roleData);
         if (! empty($aroNode)) {
