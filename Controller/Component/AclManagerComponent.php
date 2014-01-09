@@ -314,7 +314,7 @@ class AclManagerComponent extends Component {
 
                     if (empty($actionNode)) {
                         /* action node does not exist -> create it */
-                        $methodNode = $this->addActionNode($controllerNodeId, $action);
+                        $methodNode = $this->addActionNode($controllerNode, $action);
 
                         if (!empty($methodNode)) {
                             $log[] = sprintf(__d('acl', 'Created Aco node for %s'),
@@ -421,7 +421,7 @@ class AclManagerComponent extends Component {
      * @param unknown $action
      * @return unknown
      */
-    private function addActionNode($controllerNodeId,$action) {
+    private function addActionNode($controllerNode,$action) {
                         $this->Aco->create(
                             array(
                                 'parent_id' => $controllerNode['Aco']['id'],
