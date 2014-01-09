@@ -655,7 +655,7 @@ class ArosController extends AclAppController {
         if (! empty($aroNode)) {
             $pluginName = isset($this->params['named']['plugin']) ? $this->params['named']['plugin'] : '';
             $controllerName = $this->params['named']['controller'];
-            $controller_actions = $this->AclReflector->getControllerActions(
+            $controllerActions = $this->AclReflector->getControllerActions(
                 $controllerName);
 
             $roleControllerPermissions = array();
