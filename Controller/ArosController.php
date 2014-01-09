@@ -740,7 +740,7 @@ class ArosController extends AclAppController {
 
         $acoPath = $this->getPassedAcoPath();
 
-        $aroNode = $this->Acl->Aro->node($role);
+        $aroNode = $this->Acl->Aro->node($Role);
         if (! empty($aroNode)) {
             if (! $this->AclManager->savePermissions($aroNode, $acoPath,
                 'deny')) {
