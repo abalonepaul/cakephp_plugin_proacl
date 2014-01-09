@@ -552,7 +552,7 @@ class AclManagerComponent extends Component {
      * @param string $permission_type 'deny' or 'allow', 'grant', depending on
      * what permission (grant or deny) is being set
      */
-    public function savePermissions($aroNodes, $acoPath, $permission_type) {
+    public function savePermissions($aroNodes, $acoPath, $permissionType) {
 
         if (isset($aroNodes[0])) {
             $acoPath = 'controllers/' . $acoPath;
