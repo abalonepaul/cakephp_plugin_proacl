@@ -314,7 +314,7 @@ class AclManagerComponent extends Component {
 
                     if (empty($actionNode)) {
                         /* action node does not exist -> create it */
-                        $methodNode = $this->addActionNode($controllerNodId, $action);
+                        $methodNode = $this->addActionNode($controllerNodeId, $action);
 
                         if (!empty($methodNode)) {
                             $log[] = sprintf(__d('acl', 'Created Aco node for %s'),
@@ -417,11 +417,11 @@ class AclManagerComponent extends Component {
     /**
      * Add an Action Node
      *
-     * @param unknown $controllerNodId
+     * @param unknown $controllerNodeId
      * @param unknown $action
      * @return unknown
      */
-    private function addActionNode($controllerNodId,$action) {
+    private function addActionNode($controllerNodeId,$action) {
                         $this->Aco->create(
                             array(
                                 'parent_id' => $controllerNode['Aco']['id'],
@@ -430,7 +430,7 @@ class AclManagerComponent extends Component {
                             ));
                         $methodNode = $this->Aco->save();
 
-        return $pluginNode;
+        return $methodNode;
 
     }
 
@@ -496,7 +496,7 @@ class AclManagerComponent extends Component {
             ));
 
         $existingAcoPaths = array();
-        foreach ($acos as $aco_node) {
+        foreach ($acos as $acoNode) {
             $pathNodes = $this->Aco->getPath($acoNode['Aco']['id']);
 
             if (count($pathNodes) > 1 && $pathNodes[0]['Aco']['alias'] == 'controllers') {
