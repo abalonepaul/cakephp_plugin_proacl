@@ -1,49 +1,36 @@
 <?php
 echo $this->element('design/header');
-?>
-
-<?php
 echo $this->element('Aros/links');
-?>
 
-<?php
 if (count($missingAros['roles']) > 0) {
     echo '<h3>' . __d('acl', 'Roles without corresponding Aro') . '</h3>';
     
-    $list = array();
+    $list = '';
     foreach ($missingAros['roles'] as $missingAro) {
-        $list[] = $missingAro[$roleModelName][$roleDisplayField];
+        $list .= $this->Html->tag('li', $missingAro[$roleModelName][$roleDisplayField], array('class'=>'list-group-item'));
     }
     
-    echo $this->Html->nestedList($list);
+    echo $this->Html->tag('ul', $list, array('class'=>'list-group col-md-5'));
 }
-?>
 
-<?php
 if (count($missingAros['users']) > 0) {
-    echo '<h3>' . __d('acl', 'Users without corresponding Aro') . '</h3>';
+    echo $this->Html->tag('h3', __d('acl', 'Users without corresponding Aro'));
     
-    $list = array();
+    $list = '';
     foreach ($missingAros['users'] as $missingAro) {
-        $list[] = $missingAro[$userModelName][$userDisplayField];
-    }
-    
-    echo $this->Html->nestedList($list);
+        $list .= $this->Html->tag('li', $missingAro[$userModelName][$userDisplayField], array('class'=>'list-group-item'));
+    }   
 }
-?>
 
-<?php
 if (count($missingAros['roles']) > 0 || count($missingAros['users']) > 0) {
-    echo '<p>';
-    echo $this->Html->link(__d('acl', 'Build'), '/admin/acl/aros/check/run');
-    echo '</p>';
+    $list .= $this->Html->tag('li', $this->Html->link(__d('acl', 'Build'),
+        array('admin'=>true, 'prefix'=>'admin', 'plugin'=>'acl','controller'=>'aros', 'action'=>'check', 'run'),
+        array('class'=>'btn')),array('class'=>'list-group-item')
+        );
+    echo $this->Html->tag('ul', $list, array('class'=>'list-group col-md-6 col-xs-6'));
 } else {
-    echo '<p>';
-    echo __d('acl', 'There is no missing ARO.');
-    echo '</p>';
+    echo $this->Html->tag('h4', __d('acl', 'There is no missing ARO.'));
 }
-?>
 
-<?php
 echo $this->element('design/footer');
 ?>

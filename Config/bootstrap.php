@@ -7,7 +7,7 @@ App::uses('AclRouter', 'Acl.Lib');
  * to include these settings in the README file */
 
 /*
- * The model name used for the user role (typically 'Role' or 'Group')
+ * The model name used in the database for the user role (typically 'Roles' or 'Groups')
  */
 Configure::write('acl.aro.role.model', 'Role');
 
@@ -44,7 +44,7 @@ Configure::write('acl.role.access_plugin_user_ids', array(
 /* The users table field used as username in the views It may be a table field
  * or a SQL expression such as "CONCAT(User.lastname, ' ', User.firstname)" for
  * MySQL or "User.lastname||' '||User.firstname" for PostgreSQL */
-Configure::write('acl.user.display_name', "User.username");
+Configure::write('acl.user.display_name', "User.email");
 
 /* Indicates whether the presence of the Acl behavior in the user and role
  * models must be verified when the ACL plugin is accessed */

@@ -214,7 +214,7 @@ class ArosController extends AclAppController {
         $missingAro = false;
 
         foreach ($users as &$user) {
-            $aro = $this->Acl->Aro->find('first',
+            $aro = $this->Aro->find('first',
                 array(
                     'conditions' => array(
                         'model' => $userModelName,

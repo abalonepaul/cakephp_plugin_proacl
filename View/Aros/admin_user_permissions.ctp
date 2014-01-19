@@ -3,23 +3,13 @@ echo $this->Html->script('/acl/js/jquery');
 echo $this->Html->script('/acl/js/acl_plugin');
 
 echo $this->element('design/header');
-?>
-
-<?php
 echo $this->element('Aros/links');
-?>
 
-<?php
+
 if (isset($users)) {
-    ?>
-	<?php
-    echo '<p>&nbsp;</p>';
-    echo '<p>';
-    echo __d('acl', 'This page allows to manage users specific rights');
-    echo '</p>';
-    echo '<p>&nbsp;</p>';
-    ?>
-	<?php
+
+    echo $this->Html->tag('h3', __d('acl', 'This page allows to manage users specific rights'));
+
     echo $this->Form->create('User');
     echo __d('acl', 'user');
     echo '<br/>';
@@ -35,7 +25,7 @@ if (isset($users)) {
     ));
     echo '<br/>';
     ?>
-<table border="0" cellpadding="5" cellspacing="2">
+<table class="table table-condensed table-bordered table-hover">
     <tr>
     	<?php
     $column_count = 1;

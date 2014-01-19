@@ -29,13 +29,8 @@ echo $this->Html->link(
 
 <div class="separator"></div>
 
-<table cellspacing="0">
-
-    <tr>
-        <th></th>
-        <th><?php echo __d('acl', 'grant access to <em>all actions</em>'); ?></th>
-        <th><?php echo __d('acl', 'deny access to <em>all actions</em>'); ?></th>
-    </tr>
+<table class="table table-striped table-condensed table-bordered">
+    <?php echo $this->Html->tableHeaders(array('',__d('acl', 'grant access to <em>all actions</em>'), ('acl', 'deny access to <em>all actions</em>')));?>
 
 <?php
 $i = 0;
@@ -72,9 +67,9 @@ foreach ($roles as $role) {
 
 <div class="separator"></div>
 
-<div>
+<div class="table-responsive">
 
-    <table border="0" cellpadding="5" cellspacing="2">
+    <table class="table table-bordered table-condensed table-hover">
         <tr>
     	<?php
     
@@ -271,9 +266,7 @@ if (isset($actions['plugin']) && is_array($actions['plugin'])) {
 }
 ?>
 	</table>
-	<?php
-echo $this->Html->image('/acl/img/design/tick.png') . ' ' . __d('acl', 
-    'authorized');
+	<?php echo $this->Html->image('/acl/img/design/tick.png') . ' ' . __d('acl', 'authorized');
 echo '&nbsp;&nbsp;&nbsp;';
 echo $this->Html->image('/acl/img/design/cross.png') . ' ' . __d('acl', 
     'blocked');
