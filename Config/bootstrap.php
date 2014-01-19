@@ -44,7 +44,7 @@ Configure::write('acl.role.access_plugin_user_ids', array(
 /* The users table field used as username in the views It may be a table field
  * or a SQL expression such as "CONCAT(User.lastname, ' ', User.firstname)" for
  * MySQL or "User.lastname||' '||User.firstname" for PostgreSQL */
-Configure::write('acl.user.display_name', "User.email");
+Configure::write('acl.user.display_name', "email");
 
 /* Indicates whether the presence of the Acl behavior in the user and role
  * models must be verified when the ACL plugin is accessed */
