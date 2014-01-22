@@ -1,6 +1,6 @@
 <?php
 //echo $this->Html->script('/acl/js/jquery');
-echo $this->Html->script('/acl/js/acl_plugin');
+echo $this->Html->script('Acl.acl_plugin.js');
 
 echo $this->element('design/header');
 ?>

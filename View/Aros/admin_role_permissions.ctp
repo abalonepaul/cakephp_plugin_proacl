@@ -1,6 +1,6 @@
 <?php
-echo $this->Html->script('/acl/js/jquery');
-echo $this->Html->script('/acl/js/acl_plugin');
+//echo $this->Html->script('/acl/js/jquery');
+echo $this->Html->script('Acl.acl_plugin.js');
 
 echo $this->element('design/header');
 ?>
@@ -152,8 +152,7 @@ if (isset($actions['app']) && is_array($actions['app'])) {
                 echo '</td>';
             }
 
-            echo '</tr>
-                ';
+            echo '</tr>';
         }
 
         $i ++;

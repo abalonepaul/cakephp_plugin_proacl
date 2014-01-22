@@ -32,7 +32,7 @@ Configure::write('acl.aro.role.display_field', 'name');
 /* You can add here role id(s) that are always allowed to access the ACL plugin
  * (by bypassing the ACL check) (This may prevent a user from being rejected
  * from the ACL plugin after a ACL permission update) */
-Configure::write('acl.role.access_plugin_role_ids', array());
+Configure::write('acl.role.access_plugin_role_ids', array(1));
 
 /* You can add here users id(s) that are always allowed to access the ACL plugin
  * (by bypassing the ACL check) (This may prevent a user from being rejected
@@ -56,10 +56,10 @@ App::build(array(
 ));
 
 /* Indicates whether the roles permissions page must load through Ajax */
-Configure::write('acl.gui.roles_permissions.ajax', true);
+Configure::write('acl.gui.roles_permissions.ajax', false);
 
 /* Indicates whether the users permissions page must load through Ajax */
-Configure::write('acl.gui.users_permissions.ajax', true);
+Configure::write('acl.gui.users_permissions.ajax', false);
 
 /**
  * Cascading Permission

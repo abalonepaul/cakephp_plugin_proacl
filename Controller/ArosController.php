@@ -702,11 +702,12 @@ class ArosController extends AclAppController {
      */
     function admin_grant_role_permission($roleId) {
 
-        $Role = & $this->{Configure::read('acl.aro.role.model')};
+        $Role =& $this->{Configure::read('acl.aro.role.model')};
 
         $Role->id = $roleId;
 
         $acoPath = $this->getPassedAcoPath();
+        $this->log($acoPath);
 
         /* Check if the role exists in the ARO table */
         $aroNode = $this->Acl->Aro->node($Role);
