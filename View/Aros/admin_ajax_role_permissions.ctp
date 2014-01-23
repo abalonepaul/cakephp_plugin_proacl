@@ -1,6 +1,6 @@
 <?php
 //echo $this->Html->script('/acl/js/jquery');
-echo $this->Html->script('/acl/js/acl_plugin');
+echo $this->Html->script('Acl.acl_plugin.js');
 
 echo $this->element('design/header');
 ?>
@@ -9,9 +9,7 @@ echo $this->element('design/header');
 echo $this->element('Aros/links');
 ?>
 
-<div class="separator"></div>
-
-<div>
+<div class="alert alert-warning">
 
     <?php
 echo $this->Html->link(
@@ -23,19 +21,16 @@ echo $this->Html->link(
         'escape' => false
     ));
 ?>
-
-
 </div>
 
-<div class="separator"></div>
+<div class="col-xs-12 col-sm-6 col-md-6">
+<table class="table table-condensed table-bordered">
 
-<table cellspacing="0">
+    <?php echo $this->Html->tableHeaders(array('',
+        __d('acl', 'grant access to <em>all actions</em>'),
+        __d('acl', 'deny access to <em>all actions</em>')
+        )); ?>
 
-    <tr>
-        <th></th>
-        <th><?php echo __d('acl', 'grant access to <em>all actions</em>'); ?></th>
-        <th><?php echo __d('acl', 'deny access to <em>all actions</em>'); ?></th>
-    </tr>
 
 <?php
 $i = 0;
@@ -69,19 +64,18 @@ foreach ($roles as $role) {
 }
 ?>
 </table>
+</div>
 
-<div class="separator"></div>
+<div class="col-xs-12 col-sm-6 col-md-6">
 
-<div>
-
-    <table border="0" cellpadding="5" cellspacing="2">
+    <table class="table table-condensed table-striped table-hover">
         <tr>
         <?php
 
     $column_count = 1;
 
     $headers = array(
-        __d('acl', 'action')
+        __d('acl', 'Action')
     );
 
     foreach ($roles as $role) {

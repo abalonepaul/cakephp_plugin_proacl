@@ -1,26 +1,15 @@
 <?php
 echo $this->element('design/header');
-?>
 
-<?php
 echo $this->element('Acos/links');
-?>
 
+    echo $this->Html->tag('p',  __d('acl', 'This page allows you to clear all actions ACOs.'),array('class'=>'lead'));
 
-
-echo '<p>';
-<?php echo __d('acl', 'This page allows you to clear all actions ACOs.'); ?>
-echo '</p>';
-
-echo '<p>&nbsp;</p>';
-
-<?php if ($actionsExist) : ?>
+    if ($actionsExist) : ?>
     <p>
-    <?php echo __d('acl',
-        'Clicking the link will destroy all existing actions ACOs and associated permissions.'); ?>
-    </p>
+    <?php echo $this->Html->tag('div',__d('acl',
+        'Clicking the link will destroy all existing actions ACOs and associated permissions.'),array('class'=>'alert alert-warning'));?>
 
-    <p>
     <?php echo $this->Html->link(
         $this->Html->image('/acl/img/design/cross.png') . ' ' . __d('acl',
             'Clear ACOs'), '/admin/acl/acos/empty_acos/run',

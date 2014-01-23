@@ -4,32 +4,28 @@ echo $this->element('design/header');
 
 <?php
 echo $this->element('Aros/links');
-?>
 
-<?php
 echo $this->Form->create('User', 
-    array(
+    array('class'=>'form-inline',
+        'role'=>'form',
         'url' => array(
             'plugin' => 'acl', 
             'controller' => 'aros', 
             'action' => 'admin_users'
         )
     ));
-echo __d('acl', 'name');
-echo '<br/>';
 echo $this->Form->input($userDisplayField, 
     array(
-        'label' => false, 
-        'div' => false
+        'label' => array('class'=>'sr-only'), 
+        'div' => array('class'=>'form-group'),
+        'placeholder'=>$userDisplayField
     ));
-echo ' ';
-echo $this->Form->end(array(
-    'label' => __d('acl', 'filter'), 
-    'div' => false
-));
+echo $this->Form->button(__d('acl','Filter'), array('class'=>'btn btn-default'));
+echo $this->Form->end();
 echo '<br/>';
 ?>
-<table border="0" cellpadding="5" cellspacing="2">
+<div class="col-md-8 col-xs-8">
+<table class="table table-striped table-striped">
     <tr>
 	<?php
 $column_count = 1;
@@ -70,35 +66,19 @@ foreach ($users as $user) {
                 )) . '</td>';
         }
     }
-    
-    // echo ' <td>' . (isset($user['Aro']) ?
-    // $this->Html->image('/acl/img/design/tick.png') :
-    // $this->Html->image('/acl/img/design/cross.png')) . '</td>';
-    
+   
     echo '</tr>';
 }
 ?>
-<tr>
-        <td class="paging" colspan="<?php echo $column_count ?>">
-		<?php echo $this->Paginator->prev('<< ' . __d('acl', 'previous'), array(), null, array('class'=>'disabled'));?>
-	 	|
-	 	<?php echo $this->Paginator->numbers(array('modulus' => 5, 'first' => 2, 'last' => 2, 'after' => ' ', 'before' => ' '));?>
-	 	|
-		<?php echo $this->Paginator->next(__d('acl', 'next') . ' >>', array(), null, array('class' => 'disabled'));?>
-	</td>
-    </tr>
-</table>
 
+</table>
+        <?php echo $this->element('paginator_links');?>
+</div>
 
 <?php
 if ($missingAro) {
-    ?>
-<div style="margin-top: 20px">
+echo $this->Html->tag('div', __d('acl', 'Some users AROS are missing. Click on a role to assign one to a user.'), array('class'=>'alert alert-warning'));
 
-    <p class="warning"><?php echo __d('acl', 'Some users AROS are missing. Click on a role to assign one to a user.') ?></p>
-
-</div>
-<?php
 }
 ?>
 

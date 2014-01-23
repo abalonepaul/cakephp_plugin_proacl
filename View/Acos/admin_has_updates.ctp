@@ -4,7 +4,7 @@ echo $this->element('design/header', array(
 ));
 ?>
 
-<div class="error">
+<div class="error row">
 	
 	<?php
 echo '<p class="warning">' . __d('acl', 
