@@ -84,7 +84,7 @@ class ArosController extends AclAppController {
                     )
                 ));
 
-            if ($aro === false) {
+            if (empty($aro)) {
                 $missingAros['roles'][] = $role;
             }
         }
@@ -105,7 +105,7 @@ class ArosController extends AclAppController {
                     )
                 ));
 
-            if ($aro === false) {
+            if (empty($aro)) {
                 $missingAros['users'][] = $user;
             }
         }
