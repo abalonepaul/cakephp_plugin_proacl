@@ -1,10 +1,5 @@
-<?php
-echo $this->element('design/header');
-?>
-
-<?php
-echo $this->element('Acos/links');
-?>
+<?php echo $this->element('design/header'); ?>
+<?php echo $this->element('Acos/links');?>
 
 <?php
 if ($run) {
@@ -16,12 +11,10 @@ if ($run) {
         // echo '<p>';
         echo $this->Html->nestedList($createLogs);
     } else {
-        echo '<p>';
-        echo __d('acl', 'There was no new actions ACOs to create');
-        echo '</p>';
+        echo $this->Html->tag('p',__d('acl', 'There was no new actions ACOs to create'));
     }
     
-    echo '<h3>' . __d('acl', 'Obsolete ACOs') . '</h3>';
+    echo $this->Html->tag('h3', __d('acl', 'Obsolete ACOs'));
     
     if (count($pruneLogs) > 0) {
         // echo '<p>';
@@ -29,26 +22,19 @@ if ($run) {
         // echo '<p>';
         echo $this->Html->nestedList($pruneLogs);
     } else {
-        echo '<p>';
-        echo __d('acl', 'There was no action ACO to delete');
-        echo '</p>';
+        echo $this->Html->tag('h3', __d('acl', 'There was no action ACO to delete'));
     }
 } else {
-    echo '<p>';
-    echo __d('acl', 
-        'This page allows you to synchronize the existing controllers and actions with the ACO datatable.');
-    echo '</p>';
-    
-    echo '<p>&nbsp;</p>';
-    
+
+    echo $this->Html->tag('p', __d('acl', 
+        'This page allows you to synchronize the existing controllers and actions with the ACO datatable.'),array('class'=>'lead'));
+
     $has_aco_to_sync = false;
     
     if (count($missingAcoNodes) > 0) {
         echo '<h3>' . __d('acl', 'Missing ACOs') . '</h3>';
         
-        echo '<p>';
-        echo $this->Html->nestedList($missingAcoNodes);
-        echo '</p>';
+        echo $this->Html->tag('div', $this->Html->nestedList($missingAcoNodes), array('class'=>'row'));
         
         $has_aco_to_sync = true;
     }
@@ -56,22 +42,18 @@ if ($run) {
     if (count($nodesToPrune) > 0) {
         echo '<h3>' . __d('acl', 'Obsolete ACO nodes') . '</h3>';
         
-        echo '<p>';
-        echo $this->Html->nestedList($nodesToPrune);
-        echo '</p>';
+        echo $this->Html->tag('div', $this->Html->nestedList($nodesToPrune), array('class'=>'row'));
         
         $has_aco_to_sync = true;
     }
     
     if ($has_aco_to_sync) {
-        echo '<p>&nbsp;</p>';
         
-        echo '<p>';
-        echo __d('acl', 
-            'Clicking the link will not change or remove permissions for existing actions ACOs.');
-        echo '</p>';
+        echo '<p>'.__d('acl', 
+            'Clicking the link will not change or remove permissions for existing actions ACOs.')
+            .'<br />';
         
-        echo '<p>';
+
         echo $this->Html->link(
             $this->Html->image('/acl/img/design/sync.png') . ' ' . __d('acl', 
                 'Synchronize'), '/admin/acl/acos/synchronize/run', 
@@ -80,10 +62,10 @@ if ($run) {
             ));
         echo '</p>';
     } else {
-        echo '<p style="font-style:italic;">';
+        echo '<p><em>';
         echo $this->Html->image('/acl/img/design/tick.png') . ' ' . __d('acl', 
             'The ACO datatable is already synchronized');
-        echo '</p>';
+        echo '</em></p>';
     }
 }
 

@@ -4,7 +4,7 @@ echo $this->element('design/header', array(
 ));
 ?>
 
-<div class="error">
+<div class="error row">
 	
 	<?php
 if (isset($model_is_not_requester)) {

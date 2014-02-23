@@ -1,0 +1,13 @@
+/* pagination fix for bootstrap pagination */
+.pagination .current,
+.pagination .active,
+.pagination .disabled {
+position: relative;
+float: left;
+padding: 6px 12px;
+margin-left: -1px;
+line-height: 1.428571429;
+text-decoration: none;
+background-color: #ffffff;
+border: 1px solid #dddddd;
+}

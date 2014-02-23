@@ -1,8 +1,6 @@
 <?php
 echo $this->element('design/header');
-?>
 
-<?php
 echo $this->element('Acos/links');
 ?>
 
@@ -10,7 +8,7 @@ echo $this->element('Acos/links');
 if ($run) :
     if (count($logs) > 0) :
 ?>
-
+    <?php /*@TODO replace with cake tag(p)*/ ?>
         <p>
         <?php echo __d('acl', 'The following actions ACOs have been created');?>
         </p>
@@ -25,12 +23,14 @@ if ($run) :
 <?php     endif;
 else:
 ?>
-    <p>
-    <?php echo __d('acl',
-        'This page allows you to build missing actions ACOs if any.'); ?>
-    </p>
+    <?php /*@TODO replace with cake tag(p)*/ ?>
+    <p><div class="row">
+    <?php 
+    echo $this->Html->tag('p',  __d('acl',
+        'This page allows you to build missing actions ACOs if any.'), array('class'=>'lead'));
+        ?>
 
-    <p>&nbsp;</p>
+    </div>
 
 <?php     if (count($missingAcoNodes) > 0) : ?>
         <h3><?php echo __d('acl', 'Missing ACOs'); ?></h3>
