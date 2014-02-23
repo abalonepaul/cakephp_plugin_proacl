@@ -46,7 +46,7 @@ class ArosController extends AclAppController {
     }
 
     /**
-     * Check
+     * Check for missing AROs or build new AROs
      * @param string $run
      */
     public function admin_check($run = null) {
@@ -55,9 +55,9 @@ class ArosController extends AclAppController {
         $roleModelName = Configure::read('acl.aro.role.model');
 
         $userDisplayField = $this->AclManager->setDisplayName(
-            $userModelName, Configure::read('acl.user.display_name'));
+        $userModelName, Configure::read('acl.user.display_name'));
         $roleDisplayField = $this->AclManager->setDisplayName(
-            $roleModelName, Configure::read('acl.aro.role.display_field'));
+        $roleModelName, Configure::read('acl.aro.role.display_field'));
 
         $this->set('userDisplayField', $userDisplayField);
         $this->set('roleDisplayField', $roleDisplayField);
@@ -710,8 +710,7 @@ class ArosController extends AclAppController {
         /* Check if the role exists in the ARO table */
         $aroNode = $this->Acl->Aro->node($role);
         if (! empty($aroNode)) {
-            if (! $this->AclManager->savePermissions($aroNodes, $acoPath, $permissionType)($aroNode, $acoPath,
-                'grant')) {
+            if (! $this->AclManager->savePermissions($aroNode, $acoPath, 'grant')) {
                 $this->set('aclError', true);
             }
         } else {
@@ -743,8 +742,7 @@ class ArosController extends AclAppController {
 
         $aroNode = $this->Acl->Aro->node($role);
         if (! empty($aroNode)) {
-            if (! $this->AclManager->savePermissions($aroNode, $acoPath,
-                'deny')) {
+            if (! $this->AclManager->savePermissions($aroNode, $acoPath, 'deny')) {
                 $this->set('aclError', true);
             }
         } else {
@@ -783,7 +781,7 @@ class ArosController extends AclAppController {
             foreach ($controllerActions as $actionName) {
                 $acoPath = $pluginName;
                 if (empty($acoPath)) {
-                    $acoPath .= $controllerName
+                    $acoPath .= $controllerName;
                 } else {
                     $acoPath .= '/' . $controllerName;
                 }

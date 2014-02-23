@@ -55,7 +55,8 @@ class AclManagerComponent extends Component {
     }
 
     /**
-     * Checks to see if the User model is set to act as an ACL requester
+     * Checks to see if the User model is set to act as an ACL requester or set to act as
+     * both a requested and controlled object
      *
      * @param unknown $modelClassName
      * @return boolean
@@ -67,9 +68,9 @@ class AclManagerComponent extends Component {
         $behaviors = $model->actsAs;
         if (! empty($behaviors) && array_key_exists('Acl', $behaviors)) {
             $aclBehavior = $behaviors['Acl'];
-            if ($aclBehavior == 'requester') {
+            if ($aclBehavior == 'requester' || $aclBehavior == 'both') {
                 return true;
-            } elseif (is_array($aclBehavior) && isset($aclBehavior['type']) && $aclBehavior['type'] == 'requester') {
+            } elseif (is_array($aclBehavior) && isset($aclBehavior['type']) && ($aclBehavior['type'] == 'requester' || $aclBehavior['type'] == 'both')) {
                 return true;
             }
         }
