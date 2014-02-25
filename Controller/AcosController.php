@@ -27,18 +27,19 @@ class AcosController extends AclAppController {
      * Delete the Acos
      * @param string $run
      */
-    function admin_empty_acos($run = null) {
+    public function admin_empty_acos($run = null) {
         /* Delete ACO with 'alias' controllers -> all ACOs belonging to the
          * actions tree will be deleted, but eventual ACO that are not actions
-         * will be kept */
+         * will be kept
+         */
         $controllerAco = $this->Aco->findByAlias('controllers');
 
         if ($controllerAco !== false) {
-            $this->set('actionsExist', true);
+            $actionsExist = true;
 
             if (isset($run)) {
                 if ($this->Aco->delete($controllerAco['Aco']['id'])) {
-                    $this->set('actionsExist', false);
+                    $actionsExist = false;
 
                     $this->Session->setFlash(
                         __d('acl',
@@ -51,52 +52,53 @@ class AcosController extends AclAppController {
                         'flash_error', null, 'plugin_acl');
                 }
 
-                $this->set('run', true);
+                $run = true;
             } else {
-                $this->set('run', false);
+                $run = false;
             }
         } else {
-            $this->set('actionsExist', false);
+            $actionsExist = false;
         }
+        $this->set(compact('actionsExist', 'run'));
     }
 
     /**
      * Admin Build Acls
      * @param string $run
      */
-    function admin_build_acl($run = null) {
+    public function admin_build_acl($run = null) {
 
         if (isset($run)) {
             $logs = $this->AclManager->createAcos();
 
-            $this->set('logs', $logs);
-            $this->set('run', true);
+            $run = true;
         } else {
             $missingAcoNodes = $this->AclManager->getMissingAcos();
 
             $this->set('missingAcoNodes', $missingAcoNodes);
 
-            $this->set('run', false);
+            $run = false;
         }
+            $this->set(compact('logs', 'run'));
     }
 
     /**
      * Prune the Acos
      * @param string $run
      */
-    function admin_prune_acos($run = null) {
+    public function admin_prune_acos($run = null) {
 
         if (isset($run)) {
             $logs = $this->AclManager->pruneAcos();
 
-            $this->set('logs', $logs);
-            $this->set('run', true);
+            $run = true;
         } else {
             $nodesToPrune = $this->AclManager->getAcosToPrune();
 
             $this->set('nodesToPrune', $nodesToPrune);
 
-            $this->set('run', false);
+            $run = false;
+            $this->set(compact('run','logs'));
         }
     }
 
@@ -105,7 +107,7 @@ class AcosController extends AclAppController {
      *
      * @param string $run
      */
-    function admin_synchronize($run = null) {
+    public function admin_synchronize($run = null) {
 
         if (isset($run)) {
             $pruneLogs = $this->AclManager->pruneAcos();
@@ -124,5 +126,6 @@ class AcosController extends AclAppController {
 
             $this->set('run', false);
         }
+
     }
 }
