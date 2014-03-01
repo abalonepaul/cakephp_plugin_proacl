@@ -155,7 +155,7 @@ class AclAppController extends AppController {
      */
     protected function setAcoVariables() {
 
-        $this->set('plugin',
+     $this->set('plugin',
             isset($this->params['named']['plugin']) ? $this->params['named']['plugin'] : '');
         $this->set('controller_name', $this->params['named']['controller']);
         $this->set('action', $this->params['named']['action']);
