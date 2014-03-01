@@ -13,10 +13,6 @@ class AclManagerComponent extends Component {
         'Session'
     );
 
-    /**
-     *
-     * @var AclAppController
-     */
     private $Controller = null;
 
     private $controllerHashFile;
@@ -70,7 +66,11 @@ class AclManagerComponent extends Component {
             $aclBehavior = $behaviors['Acl'];
             if ($aclBehavior == 'requester' || $aclBehavior == 'both') {
                 return true;
-            } elseif (is_array($aclBehavior) && isset($aclBehavior['type']) && ($aclBehavior['type'] == 'requester' || $aclBehavior['type'] == 'both')) {
+            } elseif (
+                is_array($aclBehavior) &&
+                isset($aclBehavior['type']) &&
+                ($aclBehavior['type'] == 'requester' || $aclBehavior['type'] == 'both')
+            ) {
                 return true;
             }
         }
@@ -93,9 +93,11 @@ class AclManagerComponent extends Component {
 
         $schema = $modelInstance->schema();
 
-        if (array_key_exists($fieldExpression, $schema) || array_key_exists(
-            str_replace($modelClassName . '.', '', $fieldExpression), $schema) || array_key_exists(
-            $fieldExpression, $modelInstance->virtualFields)) {
+        if (
+            array_key_exists($fieldExpression, $schema) ||
+            array_key_exists(str_replace($modelClassName . '.', '', $fieldExpression), $schema) ||
+            array_key_exists($fieldExpression, $modelInstance->virtualFields)
+            ) {
             /* The field does not need to be created as it already exists in the
              * model as a datatable field, or a virtual field configured in the
              * model
@@ -105,8 +107,7 @@ class AclManagerComponent extends Component {
              * Remove the model name
              */
             if (strpos($fieldExpression, $modelClassName . '.') === 0) {
-                $fieldExpression = str_replace($modelClassName . '.', '',
-                    $fieldExpression);
+                $fieldExpression = str_replace($modelClassName . '.', '',$fieldExpression);
             }
 
             return $fieldExpression;
@@ -188,6 +189,7 @@ class AclManagerComponent extends Component {
         $controllers = $this->AclReflector->getAllControllers();
 
         $actionsAcoPaths = array();
+        $actionsAcoPaths[] = 'controllers';
         foreach ($actions as $action) {
             $actionPath = explode('/', $action);
             $controller = $actionPath[count($actionPath) - 2];
@@ -203,16 +205,16 @@ class AclManagerComponent extends Component {
         }
         $actionsAcoPaths[] = 'controllers';
 
-        $aco =& $this->Acl->Aco;
+        $this->Aco =& $this->Acl->Aco;
 
-        $acos = $aco->find('all',
+        $acos = $this->Aco->find('all',
             array(
                 'recursive' => - 1
             ));
 
         $existingAcoPaths = array();
         foreach ($acos as $acoNode) {
-            $pathNodes = $aco->getPath($acoNode['Aco']['id']);
+            $pathNodes = $this->Aco->getPath($acoNode['Aco']['id']);
             $path = '';
             foreach ($pathNodes as $pathNode) {
                 $path .= '/' . $pathNode['Aco']['alias'];
@@ -238,9 +240,9 @@ class AclManagerComponent extends Component {
         $log = array();
 
         $controllers = $this->AclReflector->getAllControllers();
-        $this->log('Controllers' . $controllers);
+        //$this->log('Controllers' . $controllers);
 
-         // Create 'controllers' node if it does not exist
+         // Create root 'controllers' node if it does not exist
         $root = $this->Aco->node('controllers');
         if (empty($root)) {
             $root = $this->addRootNode();
@@ -251,6 +253,7 @@ class AclManagerComponent extends Component {
         } else {
             $root = $root[0];
         }
+        //Loop through each Controller to see if we have ACO nodes for the objects
         foreach ($controllers as $controller) {
             $controllerName = $controller['name'];
 
@@ -259,16 +262,14 @@ class AclManagerComponent extends Component {
                 $pluginNode = null;
 
                 if (! empty($pluginName)) {
-                    /* Case of plugin controller */
-                    $this->log('Plugin Name: ' . $pluginName);
+                    // If this is a Plugin Controller get the Controller name
+                    //$this->log('Plugin Name: ' . $pluginName);
                     $controllerName = $this->AclReflector->getPluginControllerName($controllerName);
 
-
-                     //Check plugin node
-
+                     //Check for a Plugin Node
                     $pluginNode = $this->Aco->node('controllers/' . $pluginName);
                     if (empty($pluginNode)) {
-                        /* plugin node does not exist -> create it */
+                        // plugin node does not exist -> create it
                         $pluginNode = $this->addPluginNode($root['Aco']['id'], $pluginName);
                         if (!empty($pluginNode)) {
                             $log[] = sprintf(
@@ -278,13 +279,11 @@ class AclManagerComponent extends Component {
                     }
                 }
 
-                /**
-                 * Check controller node
-                 */
+                // Check to see if we have a Controller Node
                 $controllerNode = $this->Aco->node(
                     'controllers/' . (! empty($pluginName) ? $pluginName . '/' : '') . $controllerName);
                 if (empty($controllerNode)) {
-                    /* controller node does not exist -> create it */
+                    // controller node does not exist -> create it
                     $controllerNode = $this->addControllerNode($controllerName, $root['Aco']['id'], $pluginNode);
                     if (!empty($controllerNode)) {
                         $loggedController = $controllerName;
@@ -299,17 +298,15 @@ class AclManagerComponent extends Component {
                     $controllerNode = $controllerNode[0];
                 }
 
-                /**
-                 * Check controller actions node
-                 */
-                $actions = $this->AclReflector->getControllerActions($controllerName);
-                //$this->log($controllerName . ' Actions: ' . print_r($actions,true));
+        // Check to see if we have a node for each action.
+        $actions = $this->AclReflector->getControllerActions($controllerName);
+        //$this->log($controllerName . ' Actions: ' . print_r($actions,true));
         foreach ($actions as $action) {
                     $actionNode = $this->Aco->node(
                         'controllers/' . (! empty($pluginName) ? $pluginName . '/' : '') . $controllerName . '/' . $action);
 
                     if (empty($actionNode)) {
-                        /* action node does not exist -> create it */
+                        // action node does not exist -> create it
                         $methodNode = $this->addActionNode($controllerNode, $action);
 
                         if (!empty($methodNode)) {
@@ -329,7 +326,9 @@ class AclManagerComponent extends Component {
      * @return unknown
      */
     private function addRootNode() {
-        /* root node does not exist -> create it */
+        $this->Aco =& $this->Acl->Aco;
+
+        // root node does not exist -> create it
         $this->Aco->create(
             array(
                 'parent_id' => null,
@@ -349,6 +348,7 @@ class AclManagerComponent extends Component {
      * @return array
      */
     private function addPluginNode($rootAcoId,$pluginName) {
+        $this->Aco =& $this->Acl->Aco;
         $this->Aco->create(
             array(
                 'parent_id' => $rootAcoId,
@@ -371,12 +371,10 @@ class AclManagerComponent extends Component {
      * @return unknown
      */
     private function addControllerNode($controllerName, $rootAcoId, $pluginNode = null) {
-        /**
-         * @todo make this a new method addControllerNode
-         */
+        $this->Aco =& $this->Acl->Aco;
 
         if (isset($pluginNode)) {
-            /* The controller belongs to a plugin */
+            // The controller belongs to a plugin
             if (isset($pluginNode[0])) {
                 $parentId = $pluginNode[0]['Aco']['id'];
             } else {
@@ -405,16 +403,16 @@ class AclManagerComponent extends Component {
      * @param unknown $action
      * @return unknown
      */
-    private function addActionNode($controllerNode,$action) {
-        $this->log('Controller Node: ' . print_r($controllerNode,true));
-        $this->log('Action: ' . $action);
-                        $this->Aco->create(
-                            array(
-                                'parent_id' => $controllerNode['Aco']['id'],
-                                'model' => null,
-                                'alias' => $action
-                            ));
-                        $methodNode = $this->Aco->save();
+    private function addActionNode($controllerNode = null,$action = null) {
+        $this->Aco =& $this->Acl->Aco;
+
+        $this->Aco->create(
+            array(
+                'parent_id' => $controllerNode['Aco']['id'],
+                'model' => null,
+                'alias' => $action
+            ));
+        $methodNode = $this->Aco->save();
 
         return $methodNode;
 
@@ -474,7 +472,7 @@ class AclManagerComponent extends Component {
         }
         $actionsAcoPaths[] = 'controllers';
 
-        $this->Aco = & $this->Acl->Aco;
+        $this->Aco =& $this->Acl->Aco;
 
         $acos = $this->Aco->find('all',
             array(
@@ -489,6 +487,7 @@ class AclManagerComponent extends Component {
                 $path = '';
                 foreach ($pathNodes as $pathNode) {
                     $path .= '/' . $pathNode['Aco']['alias'];
+
                 }
 
                 $path = substr($path, 1);
@@ -506,7 +505,7 @@ class AclManagerComponent extends Component {
      */
     public function pruneAcos() {
 
-        $this->Aco = & $this->Acl->Aco;
+        $this->Aco =& $this->Acl->Aco;
 
         $log = array();
 
@@ -515,7 +514,7 @@ class AclManagerComponent extends Component {
         foreach ($pathsToPrune as $pathToPrune) {
             $node = $this->Aco->node($pathToPrune);
             if (! empty($node)) {
-                /* First element is the last part in path -> we delete it */
+                // First element is the last part in path -> we delete it
                 if ($this->Aco->delete($node[0]['Aco']['id'])) {
                     $log[] = sprintf(
                         __d('acl', "Aco node '%s' has been deleted"),
@@ -557,43 +556,36 @@ if (isset($aroNodes[0])) {
             );
             $aroId = $aroNodes[0]['Aro']['id'];
 
-            $specificPermissionRight = $this->getSpecificPermissionRight(
-                $aroNodes[0], $acoPath);
-            $inheritedPermissionRight = $this->getFirstParentPermissionRight(
-                $aroNodes[0], $acoPath);
+            $specificPermissionRight = $this->getSpecificPermissionRight($aroNodes[0], $acoPath);
+            $inheritedPermissionRight = $this->getFirstParentPermissionRight($aroNodes[0], $acoPath);
 
             if (empty($inheritedPermissionRight) && count($aroNodes) > 1) {
-                /* Get the permission inherited by the parent ARO */
-                $specificParentAroPermissionRight = $this->getSpecificPermissionRight(
-                    $aroNodes[1], $acoPath);
+                // Get the permission inherited by the parent ARO
+                $specificParentAroPermissionRight = $this->getSpecificPermissionRight($aroNodes[1], $acoPath);
 
                 if (isset($specificParentAroPermissionRight)) {
                     /* If there is a specific permission for the parent ARO on
-                     * the ACO, the child ARO inheritates this permission */
+                     * the ACO, the child ARO inheritates this permission
+                     */
                     $inheritedPermissionRight = $specificParentAroPermissionRight;
                 } else {
-                    $inheritedPermissionRight = $this->getFirstParentPermissionRight(
-                        $aroNodes[1], $acoPath);
+                    $inheritedPermissionRight = $this->getFirstParentPermissionRight($aroNodes[1], $acoPath);
                 }
             }
 
             /* Check if the specific permission is necessary to get the correct
-             * permission */
+             * permission
+             */
             if (empty($inheritedPermissionRight)) {
                 $specificPermissionNeeded = true;
             } else {
                 if ($permissionType == 'allow' || $permissionType == 'grant') {
-                    $this->log('inherited right ' . $inheritedPermissionRight);
-                    //$this->log($inheritedPermissionRight != 1);
 
                     $specificPermissionNeeded = ($inheritedPermissionRight != 1);
-                    //$this->log('Specific Perm ' . $specificPermissionNeeded);
                 } else {
                     $specificPermissionNeeded = ($inheritedPermissionRight == 1);
                 }
             }
-$this->log($specificPermissionNeeded);
-$this->log($specificPermissionRight);
 
             if ($specificPermissionNeeded) {
                 if ($permissionType == 'allow' || $permissionType == 'grant') {
@@ -601,20 +593,14 @@ $this->log($specificPermissionRight);
                         return true;
                     } else {
 
-                        $this->log(
-                            __d('acl',
-                                'An error occured while saving the specific permission'),
-                            E_USER_NOTICE);
+                        $this->log(__d('acl','An error occured while saving the specific permission'),E_USER_NOTICE);
                         return false;
                     }
                 } else {
                     if ($this->Acl->deny($aroModelData, $acoPath)) {
                         return true;
                     } else {
-                        $this->log(
-                            __d('acl',
-                                'An error occured while saving the specific permission'),
-                            E_USER_NOTICE);
+                        $this->log(__d('acl','An error occured while saving the specific permission'),E_USER_NOTICE);
                         return false;
                     }
                 }
@@ -633,39 +619,27 @@ $this->log($specificPermissionRight);
                         ));
 
                     if ($specificPermission !== false) {
-                        if ($this->Acl->Aro->Permission->delete(
-                            array(
-                                'Permission.id' => $specificPermission['Permission']['id']
-                            ))) {
+                        if ($this->Acl->Aro->Permission->delete(array('Permission.id' => $specificPermission['Permission']['id']))) {
                             return true;
                         } else {
-                            $this->log(
-                                __d('acl',
-                                    'An error occured while deleting the specific permission'),
-                                E_USER_NOTICE);
+                            $this->log(__d('acl','An error occured while deleting the specific permission'),E_USER_NOTICE);
                             return false;
                         }
                     } else {
                         /* As $specific_permission_right has a value, we should
-                         * never fall here, but who knows... ;-) */
+                         * never fall here, but who knows... ;-)
+                         */
 
-                        $this->log(
-                            __d('acl',
-                                'The specific permission id could not be retrieved'),
-                            E_USER_NOTICE);
+                        $this->log(__d('acl','The specific permission id could not be retrieved'),E_USER_NOTICE);
                         return false;
                     }
                 } else {
                     /* As $specific_permission_right has a value, we should
-                     * never fall here, but who knows... ;-) */
-                    $this->log(
-                        __d('acl', 'The child ACO id could not be retrieved'),
-                        E_USER_NOTICE);
+                     * never fall here, but who knows... ;-)
+                     */
+                    $this->log(__d('acl', 'The child ACO id could not be retrieved'),E_USER_NOTICE);
                     return false;
                 }
-            } else {
-                /* Right can be inherited, and no specific permission exists =>
-                 * there is nothing to do... */
             }
         } else {
             $this->log(__d('acl', 'Invalid ARO'), E_USER_NOTICE);
@@ -697,9 +671,11 @@ $this->log($specificPermissionRight);
         $aroId = $aroNode['Aro']['id'];
 
         /* Check if a specific permission of the ARO's on the ACO already exists
-         * in the datasource => 		1) the ACO node must exist in the ACO table
-         * 		2) a record with the aro_id and aco_id must exist in the aros_acos
-         * table */
+         * in the datasource =>
+         * 1) the ACO node must exist in the ACO table
+         * 2) a record with the aro_id and aco_id must exist in the aros_acos
+         * table
+         */
         $acoId = null;
         $specificPermission = null;
         $specificPermissionRight = null;
@@ -715,23 +691,24 @@ $this->log($specificPermissionRight);
                         'aco_id' => $acoId
                     )
                 ));
-$this->log('ARO id:' . $aroId);
-$this->log('ACO id:' . $acoId);
-if ($specificPermission !== false) {
+            if ($specificPermission !== false) {
                 /* Check the right (grant => true / deny => false) of this
-                 * specific permission */
+                 * specific permission
+                 */
                 $specificPermissionRight = $this->Acl->check($aroModelData,
                     $acoPath);
 
                 if (isset($specificPermissioRight)) {
-                    return 1; // allowed
+                    // allowed
+                    return 1;
                 } else {
-                    return - 1; // denied
+                    // denied
+                    return - 1;
                 }
             }
         }
-
-        return null; // no specific permission found
+        // no specific permission found
+        return null;
     }
 
     /**
@@ -745,8 +722,7 @@ if ($specificPermission !== false) {
         $pkName = 'id';
         if ($aroNode['Aro']['model'] == Configure::read('acl.aro.role.model')) {
             $pkName = $this->Controller->getRolePrimaryKeyName();
-        } elseif ($aroNode['Aro']['model'] == Configure::read(
-            'acl.aro.user.model')) {
+        } elseif ($aroNode['Aro']['model'] == Configure::read('acl.aro.user.model')) {
             $pkName = $this->Controller->_getUserPrimaryKeyName();
         }
 
@@ -757,8 +733,7 @@ if ($specificPermission !== false) {
         );
         $aroId = $aroNode['Aro']['id'];
 
-        while (strpos($acoPath, '/') !== false && ! isset(
-            $parentPermissionright)) {
+        while (strpos($acoPath, '/') !== false && ! isset($parentPermissionright)) {
             $acoPath = substr($acoPath, 0, strrpos($acoPath, '/'));
 
             $parentAcoNode = $this->Acl->Aco->node($acoPath);
@@ -775,20 +750,24 @@ if ($specificPermission !== false) {
 
                 if ($parentPermission !== false) {
                     /* Check the right (grant => true / deny => false) of this
-                     * first parent permission */
+                     * first parent permission
+                     */
                     $parentPermissionRight = $this->Acl->check(
                         $aroModelData, $acoPath);
 
                     if ($parentPermissionRight) {
-                        return 1; // allowed
+                        // allowed
+                        return 1;
                     } else {
-                        return - 1; // denied
+                        // denied
+                        return - 1;
                     }
                 }
             }
         }
 
-        return null; // no parent permission found
+        // no parent permission found
+        return null;
     }
 
     /**
@@ -798,25 +777,22 @@ if ($specificPermission !== false) {
      */
     public function setSessionPermissions() {
 
-        if (! $this->Session->check('Alaxos.Acl.permissions')) {
+        if (! $this->Session->check('ProAcl.permissions')) {
             $actions = $this->AclReflector->getAllActions();
 
             $user = $this->Auth->user();
 
             if (! empty($user)) {
-                $user = array(
-                    Configure::read('acl.aro.user.model') => $user
-                );
+                $user = array(Configure::read('acl.aro.user.model') => $user);
                 $permissions = array();
 
                 foreach ($actions as $action) {
                     $acoPath = 'controllers/' . $action;
 
-                    $permissions[$acoPath] = $this->Acl->check($user,
-                        $acoPath);
+                    $permissions[$acoPath] = $this->Acl->check($user,$acoPath);
                 }
 
-                $this->Session->write('Alaxos.Acl.permissions', $permissions);
+                $this->Session->write('ProAcl.permissions', $permissions);
             }
         }
     }
