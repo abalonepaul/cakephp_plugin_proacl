@@ -37,21 +37,27 @@ class AclManagerComponent extends Component {
      * @return boolean true if the file exists or could be created
      */
     private function checkControllerHashFile() {
-
-        if (is_writable(dirname($this->controllerHashFile))) {
-            $File = new File($this->controllerHashFile, true);
-            return $File->exists();
+        if (!empty($this->controllerHashFile)){
+            if (is_writable(dirname($this->controllerHashFile))) {
+                $File = new File($this->controllerHashFile, true);
+                return $File->exists();
+            } else {
+                $this->Session->setFlash(
+                    sprintf(__d('acl', 'The %s directory is not writable'),
+                        dirname($this->controllerHashFile)), 'flash_error', null,
+                    'plugin_acl');
+            }
         } else {
-            $this->Session->setFlash(
-                sprintf(__d('acl', 'the %s directory is not writable'),
-                    dirname($this->controllerHashFile)), 'flash_error', null,
-                'plugin_acl');
-            return false;
+        $this->Session->setFlash(
+            __d('acl', 'The controller hash file does not exist'),
+                'flash_error', null,
+            'plugin_acl');
         }
+        return false;
     }
 
     /**
-     * Checks to see if the User model is set to act as an ACL requester or set to act as
+     * Checks to see if the given model is set to act as an ACL requester or set to act as
      * both a requested and controlled object
      *
      * @param unknown $modelClassName
@@ -441,13 +447,12 @@ class AclManagerComponent extends Component {
             $currentControllerHash = $this->getCurrentControllerHash();
 
             /* Check what controllers have changed */
-            $updatedControllers = array_keys(
-                Hash::diff($currentControllerHash,$storedControllerHash));
+            $updatedControllers = array_keys(Hash::diff($currentControllerHash,$storedControllerHash));
             if (!empty($updatedControllers)) {
                 return true;
             }
-            return false;
         }
+        return false;
     }
 
     /**
