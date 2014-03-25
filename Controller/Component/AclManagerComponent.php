@@ -37,21 +37,27 @@ class AclManagerComponent extends Component {
      * @return boolean true if the file exists or could be created
      */
     private function checkControllerHashFile() {
-
-        if (is_writable(dirname($this->controllerHashFile))) {
-            $File = new File($this->controllerHashFile, true);
-            return $File->exists();
+        if (!empty($this->controllerHashFile)){
+            if (is_writable(dirname($this->controllerHashFile))) {
+                $File = new File($this->controllerHashFile, true);
+                return $File->exists();
+            } else {
+                $this->Session->setFlash(
+                    sprintf(__d('acl', 'The %s directory is not writable'),
+                        dirname($this->controllerHashFile)), 'flash_error', null,
+                    'plugin_acl');
+            }
         } else {
-            $this->Session->setFlash(
-                sprintf(__d('acl', 'the %s directory is not writable'),
-                    dirname($this->controllerHashFile)), 'flash_error', null,
-                'plugin_acl');
-            return false;
+        $this->Session->setFlash(
+            __d('acl', 'The controller hash file does not exist'),
+                'flash_error', null,
+            'plugin_acl');
         }
+        return false;
     }
 
     /**
-     * Checks to see if the User model is set to act as an ACL requester or set to act as
+     * Checks to see if the given model is set to act as an ACL requester or set to act as
      * both a requested and controlled object
      *
      * @param unknown $modelClassName
@@ -81,7 +87,7 @@ class AclManagerComponent extends Component {
     /**
      * Check if a given fieldExpression is an existing fieldname for the given
      * model If it doesn't exist, a virtual field called
-     * 'alaxos_acl_display_name' is created with the given expression
+     * 'proacl_display_name' is created with the given expression
      *
      * @param string $modelClassName
      * @param string $fieldExpression
@@ -90,7 +96,6 @@ class AclManagerComponent extends Component {
     public function setDisplayName($modelClassName, $fieldExpression) {
 
         $modelInstance = $this->getModelInstance($modelClassName);
-
         $schema = $modelInstance->schema();
 
         if (
@@ -115,9 +120,9 @@ class AclManagerComponent extends Component {
             /* The field does not exist in the model -> create a virtual field
              * with the given expression */
 
-            $this->Controller->{$modelClassName}->virtualFields['alaxos_acl_display_name'] = $fieldExpression;
+            $this->Controller->{$modelClassName}->virtualFields['proacl_display_name'] = $fieldExpression;
 
-            return 'alaxos_acl_display_name';
+            return 'proacl_display_name';
         }
     }
 
@@ -203,7 +208,7 @@ class AclManagerComponent extends Component {
                 $actionsAcoPaths[] = 'controllers/' . $controller['name'];
             }
         }
-        $actionsAcoPaths[] = 'controllers';
+        //$actionsAcoPaths[] = 'controllers';
 
         $this->Aco =& $this->Acl->Aco;
 
@@ -336,7 +341,6 @@ class AclManagerComponent extends Component {
                 'alias' => 'controllers'
             ));
         $root = $this->Aco->save();
-
         return $root;
 
     }
@@ -441,13 +445,12 @@ class AclManagerComponent extends Component {
             $currentControllerHash = $this->getCurrentControllerHash();
 
             /* Check what controllers have changed */
-            $updatedControllers = array_keys(
-                Hash::diff($currentControllerHash,$storedControllerHash));
+            $updatedControllers = array_keys(Hash::diff($currentControllerHash,$storedControllerHash));
             if (!empty($updatedControllers)) {
                 return true;
             }
-            return false;
         }
+        return false;
     }
 
     /**
@@ -546,7 +549,7 @@ if (isset($aroNodes[0])) {
                 $pkName = $this->Controller->getRolePrimaryKeyName();
             } elseif ($aroNodes[0]['Aro']['model'] == Configure::read(
                 'acl.aro.user.model')) {
-                $pkName = $this->Controller->_getUserPrimaryKeyName();
+                $pkName = $this->Controller->getUserPrimaryKeyName();
             }
 
             $aroModelData = array(
@@ -660,7 +663,7 @@ if (isset($aroNodes[0])) {
             $pkName = $this->Controller->getRolePrimaryKeyName();
         } elseif ($aroNode['Aro']['model'] == Configure::read(
             'acl.aro.user.model')) {
-            $pkName = $this->Controller->_getUserPrimaryKeyName();
+            $pkName = $this->Controller->getUserPrimaryKeyName();
         }
 
         $aroModelData = array(
@@ -723,7 +726,7 @@ if (isset($aroNodes[0])) {
         if ($aroNode['Aro']['model'] == Configure::read('acl.aro.role.model')) {
             $pkName = $this->Controller->getRolePrimaryKeyName();
         } elseif ($aroNode['Aro']['model'] == Configure::read('acl.aro.user.model')) {
-            $pkName = $this->Controller->_getUserPrimaryKeyName();
+            $pkName = $this->Controller->getUserPrimaryKeyName();
         }
 
         $aroModelData = array(
@@ -779,9 +782,7 @@ if (isset($aroNodes[0])) {
 
         if (! $this->Session->check('ProAcl.permissions')) {
             $actions = $this->AclReflector->getAllActions();
-
             $user = $this->Auth->user();
-
             if (! empty($user)) {
                 $user = array(Configure::read('acl.aro.user.model') => $user);
                 $permissions = array();
