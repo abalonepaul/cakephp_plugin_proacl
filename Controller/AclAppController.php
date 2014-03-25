@@ -40,7 +40,7 @@ class AclAppController extends AppController {
             $this->set('roleModelName', $roleModelName);
             $this->set('userModelName', Configure::read('acl.aro.user.model'));
             $this->set('rolePkName', $this->getRolePrimaryKeyName());
-            $this->set('userPkName', $this->_getUserPrimaryKeyName());
+            $this->set('userPkName', $this->getUserPrimaryKeyName());
             $this->set('roleFkName', $this->_getRoleForeignKeyName());
 
             $this->authorizeAdmins();
@@ -61,7 +61,7 @@ class AclAppController extends AppController {
                 }
 
                 if (! $is_requester) {
-                    $this->render('/Aros/admin_not_acl_requester');
+                    $this->render('Acl.Aros/admin_not_acl_requester');
                 }
             }
         } else {
@@ -97,7 +97,7 @@ class AclAppController extends AppController {
                 $this->set('missingAcoNodes', $missingAcoNodes);
 
                 if ($hasUpdates) {
-                    $this->render('/Acos/admin_has_updates');
+                    $this->render('Acl.Acos/admin_has_updates');
                     $this->response->send();
                     $this->AclManager->updateControllerHashFile();
                     exit();
@@ -119,7 +119,7 @@ class AclAppController extends AppController {
         $modelRoleFk = $this->_getRoleForeignKeyName();
 
         if (in_array($this->Auth->user($modelRoleFk), $authorizedRoleIds) || in_array(
-            $this->Auth->user($this->_getUserPrimaryKeyName()),
+            $this->Auth->user($this->getUserPrimaryKeyName()),
             $authorizedUserIds)) {
             // Allow all actions. CakePHP 2.0
             $this->Auth->allow('*');
@@ -146,7 +146,6 @@ class AclAppController extends AppController {
             $acoPath .= '/' . $this->params['named']['controller'];
         }
         $acoPath .= '/' . $this->params['named']['action'];
-
         return $acoPath;
     }
 
@@ -183,7 +182,7 @@ class AclAppController extends AppController {
      *
      * @return unknown string
      */
-    protected function _getUserPrimaryKeyName() {
+    public function getUserPrimaryKeyName() {
 
         $forcedPkName = Configure::read('acl.aro.user.primary_key');
         if (! empty($forcedPkName)) {
@@ -217,7 +216,7 @@ class AclAppController extends AppController {
      */
     protected function _returnToReferer() {
 
-        $this->redirect(
+        return $this->redirect(
             $this->referer(
                 array(
                     'action' => 'admin_index'

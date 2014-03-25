@@ -18,9 +18,11 @@ class ArosController extends AclAppController {
     public $helpers = array(
         'Js' => array(
             'Jquery'
-        )
+        ),
+        'Acl.AclHtml'
     );
 
+    public $components = array('Session');
     public $paginate = array(
         'limit' => 20
     // 'order' => array('display_name' => 'asc')
@@ -96,7 +98,7 @@ class ArosController extends AclAppController {
                 array(
                     'conditions' => array(
                         'model' => $userModelName,
-                        'foreign_key' => $user[$userModelName][$this->_getUserPrimaryKeyName()]
+                        'foreign_key' => $user[$userModelName][$this->getUserPrimaryKeyName()]
                     )
                 ));
 
@@ -141,7 +143,7 @@ class ArosController extends AclAppController {
                             array(
                                 'parent_id' => $parent_id,
                                 'model' => $userModelName,
-                                'foreign_key' => $user[$userModelName][$this->_getUserPrimaryKeyName()],
+                                'foreign_key' => $user[$userModelName][$this->getUserPrimaryKeyName()],
                                 'alias' => $user[$userModelName][$userDisplayField]
                             ));
 
@@ -207,7 +209,7 @@ class ArosController extends AclAppController {
                 array(
                     'conditions' => array(
                         'model' => $userModelName,
-                        'foreign_key' => $user[$userModelName][$this->_getUserPrimaryKeyName()]
+                        'foreign_key' => $user[$userModelName][$this->getUserPrimaryKeyName()]
                     )
                 ));
 
@@ -230,7 +232,7 @@ class ArosController extends AclAppController {
 
         $data = array(
             $userModelName => array(
-                $this->_getUserPrimaryKeyName() => $this->params['named']['user'],
+                $this->getUserPrimaryKeyName() => $this->params['named']['user'],
                 $this->_getRoleForeignKeyName() => $this->params['named']['role']
             )
         );
@@ -247,7 +249,7 @@ class ArosController extends AclAppController {
             $this->Session->setFlash($errors, 'flash_error', null, 'plugin_acl');
         }
 
-        $this->_returnToReferer();
+       return $this->_returnToReferer();
     }
 
     /**
@@ -313,13 +315,11 @@ class ArosController extends AclAppController {
             ));
 
         $actions = $this->AclReflector->getAllActions();
-
         $permissions = array();
         $methods = array();
 
         foreach ($actions as $full_action) {
             $arr = String::tokenize($full_action, '/');
-
             if (count($arr) == 2) {
                 $pluginName = null;
                 $controllerName = $arr[0];
@@ -359,6 +359,7 @@ class ArosController extends AclAppController {
                 }
             }
         }
+        $actions = $methods;
         $this->set(compact('actions', 'roles', 'roleDisplayField'));
     }
 
@@ -371,11 +372,11 @@ class ArosController extends AclAppController {
         $userModelName = Configure::read('acl.aro.user.model');
         $roleModelName = Configure::read('acl.aro.role.model');
 
-        $userDisplayField = $this->AclManager->setDisplayName( $userModelName, Configure::read('acl.user.displayName'));
-
+        $userDisplayField = $this->AclManager->setDisplayName( $userModelName, Configure::read('acl.user.display_name'));
         $this->paginate['order'] = array(
             $userDisplayField => 'asc'
         );
+        $this->set('userDisplayField', $userDisplayField);
 
         if (empty($userId)) {
             if (isset($this->request->data['User'][$userDisplayField]) || $this->Session->check(
@@ -460,7 +461,7 @@ class ArosController extends AclAppController {
                                 $authorized = $this->Acl->check($user,
                                     'controllers/' . $full_action);
 
-                                $permissions[$user[$userModelName][$this->_getUserPrimaryKeyName()]] = $authorized ? 1 : 0;
+                                $permissions[$user[$userModelName][$this->getUserPrimaryKeyName()]] = $authorized ? 1 : 0;
                             }
                         }
 
@@ -495,7 +496,7 @@ class ArosController extends AclAppController {
             $this->set(compact('actions', 'roles', 'user','userDisplayField'));
 
             if (isset($this->params['named']['ajax'])) {
-                $this->render('admin_ajax_user_permissions');
+                return $this->render('Acl.Aros/admin_ajax_user_permissions');
             }
         }
     }
@@ -514,8 +515,8 @@ class ArosController extends AclAppController {
                 __d('acl', 'The permissions could not be cleared'),
                 'flash_error', null, 'plugin_acl');
         }
-
-        $this->_returnToReferer();
+        $this->autoRender = false;
+         return $this->_returnToReferer();
     }
 
     /**
@@ -550,8 +551,8 @@ class ArosController extends AclAppController {
                     'flash_error', null, 'plugin_acl');
             }
         }
-
-        $this->_returnToReferer();
+        $this->autoRender = false;
+        return $this->_returnToReferer();
     }
 
     /**
@@ -562,11 +563,10 @@ class ArosController extends AclAppController {
 
         $Role = & $this->{Configure::read('acl.aro.role.model')};
         $Role->id = $roleId;
-
         /* Check if the Role exists in the ARO table */
         $node = $this->Acl->Aro->node($Role);
         if (empty($node)) {
-            $askedRole = $role->read(null, $roleId);
+            $askedRole = $Role->read(null, $roleId);
             $this->Session->setFlash(
                 sprintf(
                     __d('acl', "The role '%s' does not exist in the ARO table"),
@@ -574,11 +574,13 @@ class ArosController extends AclAppController {
                         'acl.aro.role.display_field')]), 'flash_error', null,
                 'plugin_acl');
         } else {
-            // Grant permissions to the roll
+            // Grant permissions to the role
             $this->Acl->allow($Role, 'controllers');
-        }
 
-        $this->_returnToReferer();
+        }
+        $this->autoRender = false;
+
+        return $this->_returnToReferer();
     }
 
     /**
@@ -604,8 +606,9 @@ class ArosController extends AclAppController {
             // Deny permissions to the role
             $this->Acl->deny($Role, 'controllers');
         }
+        $this->autoRender = false;
 
-        $this->_returnToReferer();
+        return $this->_returnToReferer();
     }
 
     /**
@@ -653,15 +656,15 @@ class ArosController extends AclAppController {
             // $this->set('aclError', true);
             // $this->set('aclErrorAro', true);
         }
+        $this->autoRender = false;
 
         if ($this->request->is('ajax')) {
             //Disable debug output.
             Configure::write('debug', 0);
-            $this->autoRender = false;
 
             echo json_encode($roleControllerPermissions);
         } else {
-            $this->_returnToReferer();
+            return $this->_returnToReferer();
         }
     }
 
@@ -692,9 +695,10 @@ class ArosController extends AclAppController {
         $this->setAcoVariables();
 
         if ($this->request->is('ajax')) {
-            $this->render('ajax_role_granted');
+            $this->render('Acl.Aros/ajax_role_granted');
         } else {
-            $this->_returnToReferer();
+            $this->autoRender = false;
+            return $this->_returnToReferer();
         }
     }
 
@@ -723,9 +727,9 @@ class ArosController extends AclAppController {
         $this->setAcoVariables();
 
         if ($this->request->is('ajax')) {
-            $this->render('ajax_role_denied');
+            $this->render('Acl.Aros/ajax_role_denied');
         } else {
-            $this->_returnToReferer();
+            return $this->_returnToReferer();
         }
     }
 
@@ -737,7 +741,7 @@ class ArosController extends AclAppController {
 
         $User =& $this->{Configure::read('acl.aro.user.model')};
 
-        $userData = $user->read(null, $userId);
+        $userData = $User->read(null, $userId);
 
         $aroNode = $this->Acl->Aro->node($userData);
         if (! empty($aroNode)) {
@@ -775,14 +779,15 @@ class ArosController extends AclAppController {
                  $this->set('aclErrorAro', true);
             }
         }
+        $this->autoRender = false;
 
         if ($this->request->is('ajax')) {
             //Disable debug output.
             Configure::write('debug', 0);
-            $this->autoRender = false;
-            echo json_encode($userControllerPermissions);
+            //echo json_encode($userControllerPermissions);
+            $this->set('_serialize', array('$userControllerPermissions'));
         } else {
-            $this->_returnToReferer();
+            return $this->_returnToReferer();
         }
     }
 
@@ -795,11 +800,12 @@ class ArosController extends AclAppController {
         $User =& $this->{Configure::read('acl.aro.user.model')};
 
         $User->id = $userId;
+        $user = $User->find('first', array('conditions' => array('id' => $userId), 'contain' => false));
 
         $acoPath = $this->getPassedAcoPath();
 
         /* Check if the user exists in the ARO table */
-        $aroNode = $this->Acl->Aro->node($User);
+        $aroNode = $this->Acl->Aro->node($user);
         if (! empty($aroNode)) {
             $acoNode = $this->Acl->Aco->node('controllers/' . $acoPath);
             if (! empty($acoNode)) {
@@ -819,9 +825,9 @@ class ArosController extends AclAppController {
         $this->getPassedAcoPath();
 
         if ($this->request->is('ajax')) {
-            $this->render('ajax_user_granted');
+            $this->render('Acl.Aros/ajax_user_granted');
         } else {
-            $this->_returnToReferer();
+            return $this->_returnToReferer();
         }
     }
 
@@ -834,6 +840,7 @@ class ArosController extends AclAppController {
         $User =& $this->{Configure::read('acl.aro.user.model')};
 
         $User->id = $userId;
+        $user = $User->find('first', array('conditions' => array('id' => $userId), 'contain' => false));
 
         $acoPath = $this->getPassedAcoPath();
 
@@ -858,9 +865,9 @@ class ArosController extends AclAppController {
         $this->getPassedAcoPath();
 
         if ($this->request->is('ajax')) {
-            $this->render('ajax_user_denied');
+            $this->render('Acl.Aros/ajax_user_denied');
         } else {
-            $this->_returnToReferer();
+            return $this->_returnToReferer();
         }
     }
 }

@@ -16,6 +16,7 @@ class AcosController extends AclAppController {
 
     public $name = 'Acos';
 
+    //public $components = array('Session');
     /**
      * Aco index method
      */
