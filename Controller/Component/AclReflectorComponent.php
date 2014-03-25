@@ -98,7 +98,7 @@ class AclReflectorComponent extends Component {
      */
     public function getAllPluginNames() {
 
-        $pluginNames = array();
+        /*$pluginNames = array();
 
         $pluginPaths = $this->getAllPluginPaths();
         foreach ($pluginPaths as $pluginPath) {
@@ -109,9 +109,9 @@ class AclReflectorComponent extends Component {
                     break;
                 }
             }
-        }
-
-        return $pluginNames;
+        }*/
+        return App::objects('plugin');
+        //return $pluginNames;
     }
 
     /**
@@ -290,9 +290,7 @@ class AclReflectorComponent extends Component {
 
         $appControllersActions = $this->getAllAppControllersActions();
         $pluginControllersActions = $this->getAllPluginControllersActions();
-
-        return array_merge($appControllersActions,
-            $pluginControllersActions);
+        return array_merge($appControllersActions,$pluginControllersActions);
     }
 
     /**
@@ -304,8 +302,7 @@ class AclReflectorComponent extends Component {
      */
     public function getControllerActions($className, $filterBaseMethods = true) {
 
-        $className = $this->getControllerClassName(
-            $className);
+        $className = $this->getControllerClassName($className);
 
         $methods = get_class_methods($className);
 
@@ -315,8 +312,7 @@ class AclReflectorComponent extends Component {
 
                 $controllerCleanedMethods = array();
                 foreach ($methods as $method) {
-                    if (! in_array($method, $baseMethods) && strpos($method,
-                        '_') !== 0) {
+                    if (! in_array($method, $baseMethods) && strpos($method,'_') !== 0) {
                         $controllerCleanedMethods[] = $method;
                     }
                 }

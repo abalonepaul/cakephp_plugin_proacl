@@ -7,7 +7,7 @@ App::uses('Component', 'Controller');
 App::uses('AclManagerComponent', 'Acl.Controller/Component');
 
 
-class AclManagerComponentController extends Controller {
+class AclManagerComponentController extends AclAppController {
 
     public $components = array(
         'Auth',
@@ -89,12 +89,17 @@ class AclManagerComponentTest extends CakeTestCase {
  * @var array
  */
     public $fixtures = array(
-        'aro',
-        'aco',
-        'aros_aco',
-        'user',
-        'role',
-        );
+        'plugin.acl.user',
+        'plugin.acl.role',
+        'plugin.acl.aco',
+        'plugin.acl.aro',
+        'plugin.acl.aros_acos',
+        'app.patient',
+        'app.consent_question',
+        'app.private_message',
+        'app.order',
+        'app.message',
+    );
 
 /**
  * setUp method
@@ -148,7 +153,7 @@ class AclManagerComponentTest extends CakeTestCase {
      * @return void
      */
     public function testSetDisplayNameIncorrectField() {
-        $this->assertEquals('alaxos_acl_display_name', $this->AclManager->setDisplayName('User', 'lst_name'));
+        $this->assertEquals('proacl_display_name', $this->AclManager->setDisplayName('User', 'lst_name'));
 
     }
 
@@ -267,12 +272,20 @@ class AclManagerComponentTest extends CakeTestCase {
  */
     public function testSetSessionPermissions() {
         $this->Controller->Session->write('Auth.User', array(
-            'id' => 3,
-            'role_id' => 3,
-            'username' => 'yvonne',
+            'id' => 1,
+            'role_id' => 1,
+            'email' => 'admin@test.loc',
             ));
-        debug($this->Controller->AclManager->setSessionPermissions());
-        debug($this->Controller->AclManager->Session->read());
+        //debug($this->Controller->AclManager->Auth->user());
+        $Role =& ClassRegistry::init(Configure::read('acl.aro.role.model'));
+        $Role->id = 1;
+        //debug($Role);
+        $log = $this->Controller->AclManager->createAcos();
+        $this->Controller->AclManager->Acl->allow($Role, 'controllers');
+
+          $this->Controller->AclManager->setSessionPermissions();
+          $session = $this->Controller->Session->read();
+          $this->assertArrayHasKey('controllers/Acl/Acl/index', $session['ProAcl']['permissions']);
     }
 
 }

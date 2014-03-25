@@ -17,7 +17,6 @@ class AclRouter {
      * elements)
      */
     static function acoPath($url) {
-
         $routedUrl = Router::url($url);
         $routedUrl = str_replace(Router::url('/'), '/', $routedUrl);
         $parsedUrl = Router::parse($routedUrl);
@@ -25,11 +24,12 @@ class AclRouter {
         $acoPath = 'controllers/';
 
         if (! empty($parsedUrl['plugin'])) {
-            $acoPath .= Inflector::camelize($parsed_url['plugin']) . '/';
+            $acoPath .= Inflector::camelize($parsedUrl['plugin']) . '/';
         }
-
-        $acoPath .= Inflector::camelize($parsed_url['controller']) . '/';
+        if($parsedUrl['controller'] != 'App') {
+        $acoPath .= Inflector::camelize($parsedUrl['controller']) . '/';
         $acoPath .= $parsedUrl['action'];
+        }
 
         return $acoPath;
     }
