@@ -1,13 +1,13 @@
 <?php
 //echo $this->Html->css('/acl/css/acl.css');
 
-    /* Latest compiled and minified CSS */ 
-echo $this->Html->css('//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css'); 
+    /* Latest compiled and minified CSS */
+echo $this->Html->css('//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css');
 
-    /* Optional theme */ 
-echo $this->Html->css('//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap-theme.min.css'); 
-echo $this->Html->css('Acl.pro-acl'); 
-    
+    /* Optional theme */
+echo $this->Html->css('//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap-theme.min.css');
+echo $this->Html->css('Acl.pro-acl');
+
 ?>
 
 <div id="" class="">
@@ -32,9 +32,9 @@ $links = $this->Html->tag('li', $this->Html->link(__d('acl', 'Permissions'),
 $class =  ($selected == 'acos') ? 'active' : null;
 $links .= $this->Html->tag('li', $this->Html->link(__d('acl', 'Actions'),
     array('plugin'=>'acl', 'controller'=>'acos', 'admin'=>true, 'prefix'=>'admin', 'action'=>'index')),
-    array('class' => $class));    
+    array('class' => $class));
 
-}   ?>    
+}   ?>
 <div id="aros_link" class="acl_links navbar">
-<?php echo $this->Html->tag('ul', $links, array('class'=>'nav nav-pills'));?>
+<?php if (isset($links)) {echo $this->Html->tag('ul', $links, array('class'=>'nav nav-pills'));}?>
 </div>
