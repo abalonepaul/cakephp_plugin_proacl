@@ -18,7 +18,7 @@ class AclAppControllerTest extends ControllerTestCase {
         'plugin.acl.aco',
         'plugin.acl.aro',
         'plugin.acl.aros_acos',
-        'plugin.acl.permission',
+        //'plugin.acl.permission',
     );
 
     public function setUp() {
