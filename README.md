@@ -15,7 +15,7 @@ http://book.cakephp.org/2.0/en/core-libraries/components/access-control-lists.ht
 
 In short, You will need to initialize the database with the ACL tables, add the Acl Component to your AppController, and setup your bindNode methods for your ACL Requesters.
 
-If you havenâ€™t initialized your database, you can use the following Cake Shell command:
+If you haven’t initialized your database, you can use the following Cake Shell command:
 
 ```
 cake schema create DbAcl;
@@ -39,7 +39,7 @@ git submodule add https://github.com/abalonepaul/cakephp_plugin_proacl.git app/P
 ```javascript
 {
     "require": {
-        "cakephp/pro_aclâ€: â€œ1.*â€
+        "cakephp/pro_acl”: “1.*”
     }
 }
 ```
@@ -51,21 +51,21 @@ Download the plugin and copy the files to {APP}/Plugin/Acl.
 Ensure the plugin is loaded in {APP}/Config/bootstrap.php by calling
 
 ```php
-CakePlugin::load(â€˜Aclâ€™, array(â€˜bootstrapâ€™ => true, â€˜routesâ€™ => true));
+CakePlugin::load(‘Acl’, array(‘bootstrap’ => true, ‘routes’ => true));
 ```
 Include the components and helper in your {APP}/Controller/AppController.php:
 ```php
 class AppController extends Controller {
-         public $components = array(â€™Acl.Managerâ€™,â€™Acl.Reflectorâ€™);
-         public $helpers = array(â€™Acl.AclHtmlâ€™);
+         public $components = array(’Acl.Manager’,’Acl.Reflector’);
+         public $helpers = array(’Acl.AclHtml’);
 }
 ```
 Edit the {APP}/Plugin/Acl/Config/bootstrap.php for your application. The configuration settings are documented in that file.
 
-The ProAcl plugin uses an â€˜adminâ€™ prefix. You may need to configure your application and routes to use properly access interface.
+The ProAcl plugin uses an ‘admin’ prefix. You may need to configure your application and routes to use properly access interface.
 
 ## Session Stored Permissions
-The Session Stored Permissions feature will store a userâ€™s permissions in their session. This provides performance improvements when checking permissions manually. To use this feature, add the following to your AppController in the beforeFilter method:
+The Session Stored Permissions feature will store a user’s permissions in their session. This provides performance improvements when checking permissions manually. To use this feature, add the following to your AppController in the beforeFilter method:
 
 ```php
     $this->AclManager->setSessionPermissions();
@@ -112,7 +112,7 @@ This function allows you to view individual permissions assigned to a user. User
 The AclHtml Helper contains a method that will conditionally output a link to a controller action only if the User has permissions to access that action. You can output a link in your views like this:
 
 ```php
-echo $this->AclHtml->link(â€˜Edit Userâ€™, â€˜/users/edit/1â€™);
+echo $this->AclHtml->link(‘Edit User’, ‘/users/edit/1’);
 ```
 
 The link would only by rendered if the logged in user has permissions to access the edit method in the UsersController.
@@ -120,9 +120,9 @@ The link would only by rendered if the logged in user has permissions to access 
 ## Changelog
 
 ### 1.0 Initial Commit
-Refactored the plugin. Added support for the â€˜bothâ€™ ACL Behavior requester key. Added Unit Tests.
+Refactored the plugin. Added support for the ‘both’ ACL Behavior requester key. Added Unit Tests.
 
-## What's Coming
+## What’s Coming
 In the near future, we plan to add the following features:
 
 * Add a database setup function that will create your ACL tables for you with either incremental ids or uuids.
@@ -131,6 +131,6 @@ In the near future, we plan to add the following features:
 
 * Add support for Custom Role ordering.
 
-* Add an Ownable Behavior to limit access to a Userâ€™s own records.
+* Add an Ownable Behavior to limit access to a User’s own records.
 
 * Add support for CRUD based permissions.
