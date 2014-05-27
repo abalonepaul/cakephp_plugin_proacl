@@ -29,7 +29,7 @@ http://book.cakephp.org/2.0/en/core-libraries/behaviors/acl.html
 The ProAcl Plugin can be installed as a git submodule, using Composer, or downloaded.
 
 ### Submodule
-Clone/Copy the files in this directory into {APP}/Plugin/DebugKit
+Clone/Copy the files in this directory into {APP}/Plugin/Acl
 
 ```
 git submodule add https://github.com/abalonepaul/cakephp_plugin_proacl.git app/Plugin/Acl
@@ -62,7 +62,55 @@ class AppController extends Controller {
 ```
 Edit the {APP}/Plugin/Acl/Config/bootstrap.php for your application. The configuration settings are documented in that file.
 
+If you are using user-based permissions add the following to your User model. 
+```php
+public $actsAs = array('Acl' => array('type' => 'requester'));
+
+```
+
+If methods in your User controller also need to be controlled add this instead:
+
+```php
+public $actsAs = array('Acl' => array('type' => ‘both’));
+
+```
+
+Now add the following callback method to your User model:
+```php
+    public function parentNode() {
+        if (!$this->id && empty($this->data)) {
+            return null;
+        }
+        $data = $this->data;
+        if (empty($this->data)) {
+            $data = $this->read();
+        }
+        if (empty($data['User’][‘group_id'])) {
+            return null;
+        } else {
+            return array(‘Group' => array('id' => $data['User’][‘group_id']));
+        }
+    }
+
+```
+
+If want to use group-based permissions additionally add this to your User model:
+```php
+public function bindNode($user) {
+return array('model' => 'Group', 'foreign_key' => $user['User']['group_id']);
+}
+```
+and add this to your Group model:
+```php
+    public $actsAs = array('Acl' => array('type' => 'requester'));
+
+    public function parentNode() {
+        return null;
+    }
+```
+
 The ProAcl plugin uses an ‘admin’ prefix. You may need to configure your application and routes to use properly access interface.
+
 
 ## Session Stored Permissions
 The Session Stored Permissions feature will store a user’s permissions in their session. This provides performance improvements when checking permissions manually. To use this feature, add the following to your AppController in the beforeFilter method:
