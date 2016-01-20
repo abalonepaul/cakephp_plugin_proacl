@@ -4,14 +4,11 @@
  * @author Nicolas Rod <nico@alaxos.com>
  * @license http://www.opensource.org/licenses/mit-license.php The MIT License
  * @link http://www.alaxos.ch
+ *
  * @property AclManagerComponent $AclManager
  */
-/**
- *
- * @author Nicolas Rod <nico@alaxos.com>
- */
-class AclAppController extends AppController {
-
+class AclAppController extends AppController
+{
     public $components = array(
         'RequestHandler',
         'Acl.AclManager',
@@ -104,6 +101,8 @@ class AclAppController extends AppController {
                 } else {
                     $this->AclManager->updateControllerHashFile();
                 }
+        		
+        		$this->AclManager->update_controllers_hash_file();
             }
         }
     }

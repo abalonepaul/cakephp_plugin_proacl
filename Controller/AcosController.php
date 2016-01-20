@@ -114,6 +114,9 @@ class AcosController extends AclAppController {
             $pruneLogs = $this->AclManager->pruneAcos();
             $createLogs = $this->AclManager->createAcos();
 
+            //Clear the Caches
+            Cache::clearGroup('acl','acl');
+             
             $this->set('createLogs', $createLogs);
             $this->set('pruneLogs', $pruneLogs);
 

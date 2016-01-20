@@ -238,6 +238,11 @@ class ArosController extends AclAppController {
         );
 
         if ($this->{$userModelName}->save($data)) {
+            
+	        Cache::delete('permissions_' . $this->params['named']['user'], 'acl');
+	        $permissions = $this->AclManager->getUserPermissions($data);
+	        Cache::write('permissions_' . $this->params['named']['user'], $permissions, 'acl');
+            
             $this->Session->setFlash(
                 __d('acl', 'The user role has been updated'), 'flash_message',
                 null, 'plugin_acl');
@@ -870,4 +875,47 @@ class ArosController extends AclAppController {
             return $this->_returnToReferer();
         }
     }
+    
+    /** 
+     * Warm the Permissions Cache
+     */
+    public function admin_warm_permission_cache() {
+        $userModelName = Configure :: read('acl.aro.user.model');
+        $roleModelName = Configure :: read('acl.aro.role.model');
+        $userPrimaryKey = $this->_geUserPrimaryKeyName();
+        $userRoleKey = $this->_getRoleForeignKeyName();
+        //Warm the cache
+        if ($this->request->data['Aros']['run'] = 'run') {
+            $conditions = array();
+            	
+            //Setup to only warm one role.
+            if(!empty($this->request->data['Aros']['role_id'])) {
+                $roleId = $this->request->data['Aros']['role_id'];
+                $conditions = array($user_role_key => $role_id);
+            } else {
+                Cache::clearGroup(array('aro','user'),'acl');
+            }
+            //Get the users
+            $users = $this->{$userModelName}->find('all', array(
+                'fields' => array($userPrimaryKey,$user_role_key),
+                'conditions' => $conditions
+                 
+            )
+            );
+            	
+            //Get Permissions and warm the cache
+            foreach ($users as $user) {
+                if(!empty($role_id)) {
+                    Cache::delete('_permissions_' . $user[$userModelName][$userPrimaryKey], 'acl');
+                }
+                $permissions = $this->AclManager->get_user_permissions($user);
+                Cache::write('_permissions_' . $user[$userModelName][$userPrimaryKey], $permissions, 'acl');
+            }
+            $this->Session->setFlash('The cache has been warmed.', 'flash_success');
+        }
+        $roles = $this->{$roleModelName}->find('list');
+        $this->set(compact('roles'));
+    
+    }
+    
 }

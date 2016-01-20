@@ -621,7 +621,7 @@ if (isset($aroNodes[0])) {
                             )
                         ));
 
-                    if ($specificPermission !== false) {
+                    if (!empty($specificPermission)) {
                         if ($this->Acl->Aro->Permission->delete(array('Permission.id' => $specificPermission['Permission']['id']))) {
                             return true;
                         } else {
@@ -751,14 +751,14 @@ if (isset($aroNodes[0])) {
                         )
                     ));
 
-                if ($parentPermission !== false) {
+                if (!empty($parentPermission)) {
                     /* Check the right (grant => true / deny => false) of this
                      * first parent permission
                      */
                     $parentPermissionRight = $this->Acl->check(
                         $aroModelData, $acoPath);
 
-                    if ($parentPermissionRight) {
+                    if (!empty($parentPermissionRight)) {
                         // allowed
                         return 1;
                     } else {
@@ -786,15 +786,42 @@ if (isset($aroNodes[0])) {
             if (! empty($user)) {
                 $user = array(Configure::read('acl.aro.user.model') => $user);
                 $permissions = array();
-
-                foreach ($actions as $action) {
-                    $acoPath = 'controllers/' . $action;
-
-                    $permissions[$acoPath] = $this->Acl->check($user,$acoPath);
+                $permissions = Cache::read('_permissions_' . $user['User']['id'], 'acl');
+                if (empty($permissions)) {
+                    $permissions = $this->get_user_permissions($user);
+                    Cache::write('_permissions_' . $user['User']['id'], $permissions, 'acl');
                 }
-
+                
                 $this->Session->write('ProAcl.permissions', $permissions);
             }
         }
     }
+    
+    /**
+     * Check for cached permissions. If they do not exist, the get the permissions and write them to the cache.
+     * @param string $userId
+     * @return multitype:
+     */
+    public function geUserPermissions($user = null) {
+        if(!empty($user))
+        {
+    
+            if (!isset($user['User'])) {
+                $user = array('User' => $user);
+            }
+            if (empty($permissions)) {
+                $actions = $this->AclReflector->get_all_actions();
+    
+                foreach($actions as $action)
+                {
+                    $aco_path = 'controllers/' . $action;
+                    $permissions[$aco_path] = $this->Acl->check($user, $aco_path);
+                }
+    
+                return $permissions;
+            }
+        }
+    
+    }
+    
 }

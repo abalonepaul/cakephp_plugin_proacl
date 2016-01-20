@@ -32,7 +32,11 @@ $class = ($selected == 'admin_user_permissions') ? 'active' : null;
 $list .= $this->Html->tag('li', $this->Html->link(__d('acl', 'Users permissions'), 
     array('admin'=>true, 'prefix'=>'admin', 'plugin'=>'acl', 'controller'=>'aros', 'action'=>'user_permissions')),
     array( 'class' => $class));
-    
+$class = ($selected == 'admin_warm_permissions_cache') ? 'active' : null;
+$list .= $this->Html->tag('li', $this->Html->link(__d('acl', 'Warm Cache'), 
+    array('admin'=>true, 'prefix'=>'admin', 'plugin'=>'acl', 'controller'=>'aros', 'action'=>'warm_permission_cache')),
+    array( 'class' => $class));
+
     echo $this->Html->tag('ul', $list, array('class'=>'nav nav-tabs'));
 ?>
 </div>
